@@ -44,6 +44,14 @@ func TestTransaction(t *testing.T) {
 		EIP158Block:    big.NewInt(0),
 		ByzantiumBlock: big.NewInt(0),
 	})
+	txt.config(`Casper`, params.ChainConfig{
+		HomesteadBlock: big.NewInt(0),
+		EIP150Block:    big.NewInt(0),
+		EIP155Block:    big.NewInt(0),
+		EIP158Block:    big.NewInt(0),
+		ByzantiumBlock: big.NewInt(0),
+		CasperBlock:    big.NewInt(0),
+	})
 
 	txt.walk(t, transactionTestDir, func(t *testing.T, name string, test *TransactionTest) {
 		cfg := txt.findConfig(name)
