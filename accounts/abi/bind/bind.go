@@ -171,6 +171,10 @@ func bindTypeGo(kind abi.Type) string {
 		}
 		return fmt.Sprintf("%s*big.Int", parts[3])
 
+	case strings.HasPrefix(stringKind, "decimal"):
+		parts := regexp.MustCompile(`(u)?decimal([0-9]*)(\[[0-9]*\])?`).FindStringSubmatch(stringKind)
+		return fmt.Sprintf("%sfloat64", parts[3])
+
 	case strings.HasPrefix(stringKind, "bool") || strings.HasPrefix(stringKind, "string"):
 		parts := regexp.MustCompile(`([a-z]+)(\[[0-9]*\])?`).FindStringSubmatch(stringKind)
 		if len(parts) != 3 {

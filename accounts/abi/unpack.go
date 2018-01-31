@@ -19,6 +19,7 @@ package abi
 import (
 	"encoding/binary"
 	"fmt"
+	"math"
 	"math/big"
 	"reflect"
 
@@ -47,6 +48,18 @@ func readInteger(kind reflect.Kind, b []byte) interface{} {
 	default:
 		return new(big.Int).SetBytes(b)
 	}
+}
+
+// reads the decimal
+// https://github.com/ethereum/EIPs/issues/598
+// https://github.com/ethereum/pyethereum/commit/237df71d1eafeafaafd6bca16d0ba066f3d1fff3
+func readDecimal(t Type, word []byte) interface{} {
+	value := float64(binary.BigEndian.Uint32(word))
+	if value > math.Exp2(255) {
+		value = value - math.Exp2(256)
+	}
+
+	return value / math.Pow10(t.Size)
 }
 
 // reads a bool
@@ -164,6 +177,8 @@ func toGoType(index int, t Type, output []byte) (interface{}, error) {
 		return readInteger(t.Kind, returnOutput), nil
 	case BoolTy:
 		return readBool(returnOutput)
+	case DecimalTy:
+		return readFixedBytes(t, returnOutput)
 	case AddressTy:
 		return common.BytesToAddress(returnOutput), nil
 	case HashTy:

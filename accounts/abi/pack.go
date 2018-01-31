@@ -17,11 +17,13 @@
 package abi
 
 import (
+	"encoding/binary"
+	"math"
 	"math/big"
 	"reflect"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
+	gethMath "github.com/ethereum/go-ethereum/common/math"
 )
 
 // packBytesSlice packs the given bytes as [L, V] as the canonical representation
@@ -39,6 +41,17 @@ func packElement(t Type, reflectValue reflect.Value) []byte {
 		return packNum(reflectValue)
 	case StringTy:
 		return packBytesSlice([]byte(reflectValue.String()), reflectValue.Len())
+	case DecimalTy:
+		// https://github.com/ethereum/EIPs/issues/598
+		// https://github.com/ethereum/pyethereum/commit/237df71d1eafeafaafd6bca16d0ba066f3d1fff3
+		value := reflectValue.Float() * math.Pow10(t.Size)
+		if value >= math.Exp2(256) {
+			value = value - math.Exp2(256)
+		}
+
+		result := make([]byte, 32)
+		binary.BigEndian.PutUint32(result, uint32(value))
+		return result
 	case AddressTy:
 		if reflectValue.Kind() == reflect.Array {
 			reflectValue = mustArrayToByteSlice(reflectValue)
@@ -47,9 +60,9 @@ func packElement(t Type, reflectValue reflect.Value) []byte {
 		return common.LeftPadBytes(reflectValue.Bytes(), 32)
 	case BoolTy:
 		if reflectValue.Bool() {
-			return math.PaddedBigBytes(common.Big1, 32)
+			return gethMath.PaddedBigBytes(common.Big1, 32)
 		}
-		return math.PaddedBigBytes(common.Big0, 32)
+		return gethMath.PaddedBigBytes(common.Big0, 32)
 	case BytesTy:
 		if reflectValue.Kind() == reflect.Array {
 			reflectValue = mustArrayToByteSlice(reflectValue)

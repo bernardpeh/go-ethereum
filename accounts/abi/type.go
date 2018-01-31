@@ -38,6 +38,7 @@ const (
 	HashTy
 	FixedPointTy
 	FunctionTy
+	DecimalTy
 )
 
 // Type is the reflection of the supported argument type
@@ -158,8 +159,14 @@ func NewType(t string) (typ Type, err error) {
 		typ.T = FunctionTy
 		typ.Size = 24
 		typ.Type = reflect.ArrayOf(24, reflect.TypeOf(byte(0)))
+	case "decimal":
+		// https://github.com/ethereum/vyper/blob/master/docs/types.rst
+		typ.Size = varSize
+		typ.Kind = reflect.Float64
+		typ.Type = float64_t
+		typ.T = DecimalTy
 	default:
-		return Type{}, fmt.Errorf("unsupported arg type: %s", t)
+		return Type{}, fmt.Errorf("unsupported arg type: %s type %s", t, varType)
 	}
 
 	return

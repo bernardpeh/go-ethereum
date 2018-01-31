@@ -36,6 +36,7 @@ var (
 	int16_t    = reflect.TypeOf(int16(0))
 	int32_t    = reflect.TypeOf(int32(0))
 	int64_t    = reflect.TypeOf(int64(0))
+	float64_t  = reflect.TypeOf(float64(0))
 	address_t  = reflect.TypeOf(common.Address{})
 	int_ts     = reflect.TypeOf([]int(nil))
 	int8_ts    = reflect.TypeOf([]int8(nil))

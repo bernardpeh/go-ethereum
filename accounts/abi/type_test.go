@@ -87,6 +87,9 @@ func TestTypeRegexp(t *testing.T) {
 		{"address", Type{Kind: reflect.Array, Type: address_t, Size: 20, T: AddressTy, stringKind: "address"}},
 		{"address[]", Type{T: SliceTy, Kind: reflect.Slice, Type: reflect.TypeOf([]common.Address{}), Elem: &Type{Kind: reflect.Array, Type: address_t, Size: 20, T: AddressTy, stringKind: "address"}, stringKind: "address[]"}},
 		{"address[2]", Type{Kind: reflect.Array, T: ArrayTy, Size: 2, Type: reflect.TypeOf([2]common.Address{}), Elem: &Type{Kind: reflect.Array, Type: address_t, Size: 20, T: AddressTy, stringKind: "address"}, stringKind: "address[2]"}},
+		{"decimal10", Type{Kind: reflect.Float64, Type: float64_t, Size: 10, T: DecimalTy, stringKind: "decimal10"}},
+		{"decimal10[]", Type{T: SliceTy, Kind: reflect.Slice, Type: reflect.TypeOf([]float64{}), Elem: &Type{Kind: reflect.Float64, Type: float64_t, Size: 10, T: DecimalTy, stringKind: "decimal10"}, stringKind: "decimal10[]"}},
+		{"decimal10[2]", Type{Kind: reflect.Array, T: ArrayTy, Size: 2, Type: reflect.TypeOf([2]float64{}), Elem: &Type{Kind: reflect.Float64, Type: float64_t, Size: 10, T: DecimalTy, stringKind: "decimal10"}, stringKind: "decimal10[2]"}},
 		// TODO when fixed types are implemented properly
 		// {"fixed", Type{}},
 		// {"fixed128x128", Type{}},
@@ -252,6 +255,7 @@ func TestTypeCheck(t *testing.T) {
 		{"bytes20", common.Address{}, ""},
 		{"address", [20]byte{}, ""},
 		{"address", common.Address{}, ""},
+		{"decimal10", float64(1), ""},
 	} {
 		typ, err := NewType(test.typ)
 		if err != nil && len(test.err) == 0 {
